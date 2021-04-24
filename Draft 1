@@ -1,0 +1,29 @@
+df['Position'] = 0
+df['Direction'] = 0
+df['Direction'] = np.where(df['Open'] > df['Close'], -1, df['Direction'])
+df['Direction'] = np.where(df['Open'] < df['Close'], 1, df['Direction'])
+df['Range'] = 0    
+df['Range'] = (df['Close']-df['Open'])
+df['Range'] = df['Range']*df['Range']
+df['Range'] = np.sqrt(df['Range'])
+df['Raw Pnl'] = 0
+for i in range (5,2500):
+    if df['Direction'][i] == 1:
+        if df['Direction'][i-1] == 1 and df['Range'][i-1] > df['Range'][i]:
+            if df['Direction'][i-2] == 1 and df['Range'][i-2] > df['Range'][i-1]:
+                #if df['Direction'][i-3] == 1:
+                    #if df['Direction'][i+1] == -1:
+                        df['Position'][i] = -1
+for i in range (5,2500):
+    if df['Direction'][i] == -1:
+        if df['Direction'][i-1] == -1 and df['Range'][i-1] > df['Range'][i+1]:
+            if df['Direction'][i-2] == -1 and df['Range'][i-1] > df['Range'][i+1]:
+                #if df['Direction'][i-3] == -1:
+                    #if df['Direction'][i+1] == 1:
+                        df['Position'][i] = 1
+df['Raw Pnl'] = 0
+df['Raw PnL'] = df['Position']*(df['Close'].shift(-1) - df['Close'])
+df['Returns'] = 0
+df['Returns'] = df['Raw PnL']/df['Spliced'] 
+df['Returns'].mean()
+np.sqrt(252) * df['Returns'].mean()/df['Returns'].std(ddof=0)
