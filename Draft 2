@@ -1,0 +1,39 @@
+def trade_logic(df):
+    df['median'] = (df['Close']+df['Open'])/2
+    df['Direction'] = np.where(df['Open'] > df['Close'], -1, df['Direction'])
+    df['Direction'] = np.where(df['Open'] < df['Close'], 1, df['Direction'])
+    df['Range'] = 0    
+    df['Range'] = (df['Close']-df['Open'])
+    df['Range'] = df['Range']*df['Range']
+    df['Range'] = np.sqrt(df['Range'])
+    df['Position'] = 0
+    df['Raw Pnl'] = 0
+    df['Returns'] = 0
+    #Bearish engulfing Pattern
+    for i in range (5,2521):
+        if df['Direction'][i] == 1:
+            if df['Direction'][i-1] == 1 and df['Range'][i-1] > df['Range'][i]:
+                if df['Direction'][i-2] == 1 and df['Range'][i-2] > df['Range'][i-1]:
+                    df['Position'][i] = -1
+    #Bullish engulfing pattern- Fuckin useless
+    for i in range (5,2521):
+        if df['Direction'][i] == -1:
+            if df['Direction'][i-1] == -1 and df['Range'][i-1] > df['Range'][i+1]:
+                if df['Direction'][i-2] == -1 and df['Range'][i-1] > df['Range'][i+1]:
+                    df['Position'][i] = 1
+    #Bullish Hammer and Bullish inverse Hammer- works
+    for i in range (5,2521):
+        if df['Range'][i] <= 2*(abs(df['High'][i]-df['Low'][i])):
+            if df['median'][i] < df['median'][i-5]:
+                df['Position'][i] = 1
+    #Bullish Peircing Line- works
+    for i in range (5,2521):
+        if df['Direction'][i-1] == -1:
+            if df['Direction'][i] == 1:
+                if df['Close'][i] >= df['median'][i-1]:
+                    df['Position'][i] = 1
+    df['Raw PnL'] = df['Position']*(df['Close'].shift(-1) - df['Close'])
+    df['Returns'] = df['Raw PnL']/df['Spliced'] 
+    
+    counts = df['Position'].value_counts().to_dict()
+    return np.sqrt(252) * df['Returns'].mean()/df['Returns'].std(ddof=0)
