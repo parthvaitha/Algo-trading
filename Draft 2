@@ -15,18 +15,18 @@ def trade_logic(df):
             if df['Direction'][i-1] == 1 and df['Range'][i-1] > df['Range'][i]:
                 if df['Direction'][i-2] == 1 and df['Range'][i-2] > df['Range'][i-1]:
                     df['Position'][i] = -1
-    #Bullish engulfing pattern- Fuckin useless
+    #Bullish engulfing pattern
     for i in range (5,2521):
         if df['Direction'][i] == -1:
             if df['Direction'][i-1] == -1 and df['Range'][i-1] > df['Range'][i+1]:
                 if df['Direction'][i-2] == -1 and df['Range'][i-1] > df['Range'][i+1]:
                     df['Position'][i] = 1
-    #Bullish Hammer and Bullish inverse Hammer- works
+    #Bullish Hammer and Bullish inverse Hammer
     for i in range (5,2521):
         if df['Range'][i] <= 2*(abs(df['High'][i]-df['Low'][i])):
             if df['median'][i] < df['median'][i-5]:
                 df['Position'][i] = 1
-    #Bullish Peircing Line- works
+    #Bullish Peircing Line
     for i in range (5,2521):
         if df['Direction'][i-1] == -1:
             if df['Direction'][i] == 1:
