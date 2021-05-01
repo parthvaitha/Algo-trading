@@ -1,5 +1,9 @@
 def trade_logic(df):
+
+    num_days = df.shape[0] - 1 #####
+
     df['median'] = (df['Close']+df['Open'])/2
+    df['Direction'] = 0 #####
     df['Direction'] = np.where(df['Open'] > df['Close'], -1, df['Direction'])
     df['Direction'] = np.where(df['Open'] < df['Close'], 1, df['Direction'])
     df['Range'] = 0    
@@ -10,24 +14,24 @@ def trade_logic(df):
     df['Raw Pnl'] = 0
     df['Returns'] = 0
     #Bearish engulfing Pattern
-    for i in range (5,2521):
+    for i in range (5,num_days): #####
         if df['Direction'][i] == 1:
             if df['Direction'][i-1] == 1 and df['Range'][i-1] > df['Range'][i]:
                 if df['Direction'][i-2] == 1 and df['Range'][i-2] > df['Range'][i-1]:
                     df['Position'][i] = -1
     #Bullish engulfing pattern
-    for i in range (5,2521):
+    for i in range (5,num_days): #####
         if df['Direction'][i] == -1:
             if df['Direction'][i-1] == -1 and df['Range'][i-1] > df['Range'][i+1]:
                 if df['Direction'][i-2] == -1 and df['Range'][i-1] > df['Range'][i+1]:
                     df['Position'][i] = 1
     #Bullish Hammer and Bullish inverse Hammer
-    for i in range (5,2521):
+    for i in range (5,num_days): #####
         if df['Range'][i] <= 2*(abs(df['High'][i]-df['Low'][i])):
             if df['median'][i] < df['median'][i-5]:
                 df['Position'][i] = 1
     #Bullish Peircing Line
-    for i in range (5,2521):
+    for i in range (5,num_days): #####
         if df['Direction'][i-1] == -1:
             if df['Direction'][i] == 1:
                 if df['Close'][i] >= df['median'][i-1]:
